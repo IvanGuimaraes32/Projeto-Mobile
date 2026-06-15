@@ -7,98 +7,70 @@ import {
   TouchableOpacity
 } from "react-native";
 
-export default function Restaurante() {
+export default function Estabelecimento() {
   return (
     <ScrollView style={styles.container}>
+
       <View style={styles.banner}>
         <Text style={styles.bannerTitle}>
           Hamburgueria do Cuscuz
         </Text>
 
         <Text style={styles.bannerSub}>
-          Hambúrguer • 1.2 km
+          Hambúrguer
         </Text>
       </View>
 
       <View style={styles.info}>
         <Text style={styles.title}>
-          Sobre o restaurante
+          Sobre o estabelecimento
         </Text>
 
         <Text style={styles.description}>
-          Os melhores hambúrgueres artesanais da cidade,
-          preparados com ingredientes selecionados e
-          muito sabor.
+          Os melhores produtos e serviços da região,
+          conectando moradores do Aero Rancho aos
+          estabelecimentos locais.
         </Text>
       </View>
 
       <View style={styles.eventBox}>
         <Text style={styles.eventTitle}>
-          🎉 Evento da Semana
+          📍 Endereço
         </Text>
 
         <Text style={styles.eventText}>
-          Combo especial com 20% de desconto até domingo.
+          Rua Exemplo, 250 - Aero Rancho
         </Text>
       </View>
 
       <Text style={styles.section}>
-        Cardápio
+        Informações
       </Text>
 
       <View style={styles.item}>
         <View>
           <Text style={styles.itemName}>
-            X-Burguer Artesanal
+            Categoria
           </Text>
 
           <Text style={styles.itemDescription}>
-            Carne, queijo e molho especial
+            Hamburgueria
           </Text>
         </View>
-
-        <Text style={styles.price}>
-          R$ 29,90
-        </Text>
-      </View>
-
-      <View style={styles.item}>
-        <View>
-          <Text style={styles.itemName}>
-            X-Bacon
-          </Text>
-
-          <Text style={styles.itemDescription}>
-            Carne, bacon e cheddar
-          </Text>
-        </View>
-
-        <Text style={styles.price}>
-          R$ 34,90
-        </Text>
-      </View>
-
-      <View style={styles.item}>
-        <View>
-          <Text style={styles.itemName}>
-            Batata Frita
-          </Text>
-
-          <Text style={styles.itemDescription}>
-            Porção grande
-          </Text>
-        </View>
-
-        <Text style={styles.price}>
-          R$ 19,90
-        </Text>
       </View>
 
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>
-          Fazer Pedido
+          Abrir no Google Maps
         </Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>
+          Falar no WhatsApp
+        </Text>
+      </TouchableOpacity>
+
     </ScrollView>
   );
 }
@@ -188,12 +160,6 @@ const styles = StyleSheet.create({
   itemDescription: {
     color: "#ccc",
     marginTop: 5
-  },
-
-  price: {
-    color: "#ff7a00",
-    fontWeight: "bold",
-    fontSize: 16
   },
 
   button: {
