@@ -29,12 +29,11 @@ db.serialize(() => {
       nome TEXT NOT NULL,
       categoria TEXT NOT NULL,
       descricao TEXT,
-      endereco TEXT,
-      latitude REAL,
-      longitude REAL,
-      telefone_whatsapp TEXT,
+      endereco TEXT NOT NULL,
+      telefone_whatsapp TEXT NOT NULL,
       imagem TEXT,
       usuario_id INTEGER,
+      ativo INTEGER DEFAULT 1,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);

@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 
-export default function Home() {
+export default function Estabelecimentos() {
   const [estabelecimentos, setEstabelecimentos] = useState<any[]>([]);
 
   useEffect(() => {
@@ -18,40 +18,29 @@ export default function Home() {
   async function carregarEstabelecimentos() {
     try {
       const response = await fetch(
-        "http://192.168.1.111:3333/estabelecimentos",
+        "http://192.168.1.111:3333/estabelecimentos"
       );
 
       const data = await response.json();
-
-      console.log(data);
 
       setEstabelecimentos(data);
     } catch (error) {
       console.log("ERRO API:", error);
     }
   }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.logo}>App Aero Busca</Text>
+        <Text style={styles.logo}>Estabelecimentos</Text>
 
         <Text style={styles.subtitle}>
-          Encontre estabelecimentos perto de você
+          Comércios locais do Aero Rancho
         </Text>
       </View>
 
-      <View style={styles.banner}>
-        <Text style={styles.bannerTitle}>Promoções da Semana</Text>
-
-        <Text style={styles.bannerText}>
-          Descontos exclusivos nos estabelecimentos parceiros.
-        </Text>
-      </View>
-
-      <Text style={styles.sectionTitle}>Estabelecimentos Próximos</Text>
-
-      <Text style={{ color: "white", marginBottom: 10 }}>
-        Total carregado: {estabelecimentos.length}
+      <Text style={styles.sectionTitle}>
+        Locais Cadastrados
       </Text>
 
       {estabelecimentos.map((item, index) => (
@@ -67,13 +56,17 @@ export default function Home() {
         >
           <View>
             <Text style={styles.cardTitle}>
-              {item.nome} - ID: {item.id}
+              {item.nome}
             </Text>
 
-            <Text style={styles.cardCategory}>{item.categoria}</Text>
+            <Text style={styles.cardCategory}>
+              {item.categoria}
+            </Text>
           </View>
 
-          <Text style={styles.distance}>Ver detalhes</Text>
+          <Text style={styles.distance}>
+            Ver detalhes
+          </Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -101,24 +94,6 @@ const styles = StyleSheet.create({
   subtitle: {
     color: "#f9ffdf",
     marginTop: 5,
-  },
-
-  banner: {
-    backgroundColor: "#f9ffa1",
-    borderRadius: 18,
-    padding: 20,
-    marginBottom: 25,
-  },
-
-  bannerTitle: {
-    color: "#023f14",
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-
-  bannerText: {
-    color: "#023f14",
-    marginTop: 8,
   },
 
   sectionTitle: {

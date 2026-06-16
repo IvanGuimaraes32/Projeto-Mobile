@@ -18,6 +18,9 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'map.fill': 'map',
+  'location.fill': 'location-on',
+  'mappin.circle.fill': 'location-on',
 } as IconMapping;
 
 /**
@@ -36,6 +39,6 @@ export function IconSymbol({
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
-}) {
+}): import("react").JSX.Element {
   return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
 }

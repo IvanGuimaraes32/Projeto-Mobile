@@ -8,6 +8,7 @@ const db = require("../database");
 */
 router.get("/", (req, res) => {
   console.log("REQUISIÇÃO RECEBIDA DO APP");
+
   const sql = "SELECT * FROM estabelecimentos";
 
   db.all(sql, [], (err, rows) => {
@@ -23,6 +24,33 @@ router.get("/", (req, res) => {
 
 
 /*
+   BUSCAR UM ESTABELECIMENTO PELO ID
+*/
+router.get("/:id", (req, res) => {
+
+  const { id } = req.params;
+
+  const sql = `
+    SELECT * FROM estabelecimentos
+    WHERE id = ?
+  `;
+
+  db.get(sql, [id], (err, row) => {
+
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+
+    res.json(row);
+
+  });
+
+});
+
+
+/*
    CADASTRAR ESTABELECIMENTO
 */
 router.post("/", (req, res) => {
@@ -32,8 +60,6 @@ router.post("/", (req, res) => {
     categoria,
     descricao,
     endereco,
-    latitude,
-    longitude,
     telefone_whatsapp,
     imagem,
     usuario_id
@@ -46,13 +72,11 @@ router.post("/", (req, res) => {
       categoria,
       descricao,
       endereco,
-      latitude,
-      longitude,
       telefone_whatsapp,
       imagem,
       usuario_id
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.run(
@@ -62,8 +86,6 @@ router.post("/", (req, res) => {
       categoria,
       descricao,
       endereco,
-      latitude,
-      longitude,
       telefone_whatsapp,
       imagem,
       usuario_id
@@ -87,7 +109,7 @@ router.post("/", (req, res) => {
 
 
 /*
-   Essa parte abaixo é para atualizar estabelecimentos.
+   ATUALIZAR ESTABELECIMENTO
 */
 router.put("/:id", (req, res) => {
 
@@ -98,8 +120,6 @@ router.put("/:id", (req, res) => {
     categoria,
     descricao,
     endereco,
-    latitude,
-    longitude,
     telefone_whatsapp,
     imagem
   } = req.body;
@@ -111,8 +131,6 @@ router.put("/:id", (req, res) => {
       categoria = ?,
       descricao = ?,
       endereco = ?,
-      latitude = ?,
-      longitude = ?,
       telefone_whatsapp = ?,
       imagem = ?
     WHERE id = ?
@@ -125,8 +143,6 @@ router.put("/:id", (req, res) => {
       categoria,
       descricao,
       endereco,
-      latitude,
-      longitude,
       telefone_whatsapp,
       imagem,
       id
@@ -148,8 +164,9 @@ router.put("/:id", (req, res) => {
 
 });
 
+
 /*
-   E aqui para deletar.
+   DELETAR ESTABELECIMENTO
 */
 router.delete("/:id", (req, res) => {
 
@@ -179,5 +196,6 @@ router.delete("/:id", (req, res) => {
   );
 
 });
+
 
 module.exports = router;
