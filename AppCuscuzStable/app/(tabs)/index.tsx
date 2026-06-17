@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -10,9 +11,11 @@ import {
 
 export default function Home() {
   const [estabelecimentos, setEstabelecimentos] = useState<any[]>([]);
+  const [usuario, setUsuario] = useState<any>(null);
 
   useEffect(() => {
     carregarEstabelecimentos();
+    carregarUsuario();
   }, []);
 
   async function carregarEstabelecimentos() {
@@ -23,21 +26,46 @@ export default function Home() {
 
       const data = await response.json();
 
-      console.log(data);
-
       setEstabelecimentos(data);
     } catch (error) {
       console.log("ERRO API:", error);
     }
   }
+
+  async function sair() {
+    await AsyncStorage.removeItem("usuarioLogado");
+
+    router.replace("/login");
+  }
+
+  async function carregarUsuario() {
+    const dados = await AsyncStorage.getItem("usuarioLogado");
+
+    if (dados) {
+      setUsuario(JSON.parse(dados));
+    }
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.logo}>App Aero Busca</Text>
+        <View style={styles.topRow}>
+          <Text style={styles.logo}>App Aero Busca</Text>
+
+          <TouchableOpacity style={styles.logoutButton} onPress={sair}>
+            <Text style={styles.logoutText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.subtitle}>
           Encontre estabelecimentos perto de você
         </Text>
+
+        <Text style={{ color: "#fbffda", marginTop: 5 }}>
+          Usuário: {usuario?.nome}
+        </Text>
+
+        <Text style={{ color: "#fbffda" }}>Perfil: {usuario?.tipo}</Text>
       </View>
 
       <View style={styles.banner}>
@@ -49,6 +77,29 @@ export default function Home() {
       </View>
 
       <Text style={styles.sectionTitle}>Estabelecimentos Próximos</Text>
+
+      {/* PERFIL COMUM */}
+      {usuario?.tipo === "comum" && (
+        <TouchableOpacity style={styles.specialButton}>
+          <Text style={styles.specialButtonText}>
+            Solicitar Conta Empreendedor
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* PERFIL EMPREENDEDOR */}
+      {usuario?.tipo === "empreendedor" && (
+        <TouchableOpacity style={styles.specialButton}>
+          <Text style={styles.specialButtonText}>Meu Negócio</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* PERFIL ADMIN */}
+      {usuario?.tipo === "admin" && (
+        <TouchableOpacity style={styles.specialButton}>
+          <Text style={styles.specialButtonText}>Painel Administrador</Text>
+        </TouchableOpacity>
+      )}
 
       <Text style={{ color: "white", marginBottom: 10 }}>
         Total carregado: {estabelecimentos.length}
@@ -92,6 +143,12 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
 
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
   logo: {
     color: "#fbffda",
     fontSize: 30,
@@ -101,6 +158,18 @@ const styles = StyleSheet.create({
   subtitle: {
     color: "#f9ffdf",
     marginTop: 5,
+  },
+
+  logoutButton: {
+    backgroundColor: "#ff7a00",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+
+  logoutText: {
+    color: "white",
+    fontWeight: "bold",
   },
 
   banner: {
@@ -126,6 +195,19 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 15,
+  },
+
+  specialButton: {
+    backgroundColor: "#ff7a00",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+
+  specialButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 
   card: {

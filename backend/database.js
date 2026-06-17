@@ -13,16 +13,32 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 db.serialize(() => {
 
+  /*
+     TABELA USUARIOS
+  */
   db.run(`
     CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nome TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
       senha TEXT NOT NULL,
-      tipo TEXT NOT NULL
+
+      tipo TEXT NOT NULL DEFAULT 'comum',
+
+      solicitou_upgrade INTEGER DEFAULT 0,
+
+      aprovado_admin INTEGER DEFAULT 0,
+
+      ativo INTEGER DEFAULT 1,
+
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
+
+  /*
+     TABELA ESTABELECIMENTOS
+  */
   db.run(`
     CREATE TABLE IF NOT EXISTS estabelecimentos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,6 +54,10 @@ db.serialize(() => {
     )
   `);
 
+
+  /*
+     TABELA EVENTOS
+  */
   db.run(`
     CREATE TABLE IF NOT EXISTS eventos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,6 +69,22 @@ db.serialize(() => {
       imagem TEXT,
       usuario_id INTEGER,
       aprovado INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+
+  /*
+     SOLICITAÇÕES PARA VIRAR EMPREENDEDOR
+  */
+  db.run(`
+    CREATE TABLE IF NOT EXISTS solicitacoes_upgrade (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+      usuario_id INTEGER NOT NULL,
+
+      status TEXT DEFAULT 'pendente',
+
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);

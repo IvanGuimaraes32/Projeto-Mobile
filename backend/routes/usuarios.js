@@ -1,54 +1,81 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database");
+const bcrypt = require("bcrypt");
+const rateLimit = require("express-rate-limit");
+
+/*
+   PROTEÇÃO CONTRA BRUTEFORCE LOGIN
+*/
+const loginLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minuto
+
+  max: 5, // máximo 5 tentativas
+
+  message: {
+    error: "Muitas tentativas. Tente novamente em 1 minuto."
+  }
+});
 
 
 /*
    CADASTRAR USUÁRIO
 */
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
 
   const {
     nome,
     email,
-    senha,
-    tipo
+    senha
   } = req.body;
 
-  const sql = `
-    INSERT INTO usuarios
-    (
-      nome,
-      email,
-      senha,
-      tipo
-    )
-    VALUES (?, ?, ?, ?)
-  `;
+  try {
 
-  db.run(
-    sql,
-    [
-      nome,
-      email,
+    const senhaCriptografada = await bcrypt.hash(
       senha,
-      tipo
-    ],
-    function(err){
+      10
+    );
 
-      if(err){
-        return res.status(500).json({
-          error: err.message
+    const sql = `
+      INSERT INTO usuarios
+      (
+        nome,
+        email,
+        senha
+      )
+      VALUES (?, ?, ?)
+    `;
+
+    db.run(
+      sql,
+      [
+        nome,
+        email,
+        senhaCriptografada
+      ],
+      function (err) {
+
+        if (err) {
+          return res.status(500).json({
+            error: err.message
+          });
+        }
+
+        res.json({
+          message: "Usuário criado com sucesso",
+          id: this.lastID
         });
+
       }
+    );
 
-      res.json({
-        message: "Usuário cadastrado com sucesso",
-        id: this.lastID
-      });
+  } catch (error) {
 
-    }
-  );
+    return res.status(500).json({
+      error: "Erro ao criar usuário"
+    });
+
+  }
 
 });
 
@@ -56,7 +83,7 @@ router.post("/register", (req, res) => {
 /*
    LOGIN
 */
-router.post("/login", (req, res) => {
+router.post("/login", loginLimiter, (req, res) => {
 
   const {
     email,
@@ -66,34 +93,60 @@ router.post("/login", (req, res) => {
   const sql = `
     SELECT * FROM usuarios
     WHERE email = ?
-    AND senha = ?
   `;
 
   db.get(
     sql,
-    [email, senha],
-    (err, row) => {
+    [email],
+    async (err, usuario) => {
 
-      if(err){
+      if (err) {
         return res.status(500).json({
-          error: err.message
+          error: "Erro interno"
         });
       }
 
-      if(!row){
+      /*
+         NÃO REVELAR SE EMAIL EXISTE
+      */
+      if (!usuario) {
         return res.status(401).json({
-          message: "Usuário não encontrado"
+          error: "Credenciais inválidas"
         });
       }
 
-      res.json({
+      /*
+         COMPARAR HASH DA SENHA
+      */
+      const senhaCorreta = await bcrypt.compare(
+        senha,
+        usuario.senha
+      );
+
+      if (!senhaCorreta) {
+        return res.status(401).json({
+          error: "Credenciais inválidas"
+        });
+      }
+
+      /*
+         LOGIN OK
+      */
+      return res.json({
         message: "Login realizado com sucesso",
-        usuario: row
+
+        usuario: {
+          id: usuario.id,
+          nome: usuario.nome,
+          email: usuario.email,
+          tipo: usuario.tipo
+        }
       });
 
     }
   );
 
 });
+
 
 module.exports = router;
