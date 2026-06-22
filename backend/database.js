@@ -12,7 +12,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.serialize(() => {
-
   /*
      TABELA USUARIOS
   */
@@ -31,10 +30,11 @@ db.serialize(() => {
 
       ativo INTEGER DEFAULT 1,
 
+      expo_push_token TEXT,
+
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
-
 
   /*
      TABELA ESTABELECIMENTOS
@@ -54,7 +54,6 @@ db.serialize(() => {
     )
   `);
 
-
   /*
      TABELA EVENTOS
   */
@@ -62,17 +61,54 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS eventos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       titulo TEXT NOT NULL,
+      categoria TEXT NOT NULL,
       descricao TEXT,
-      data_evento TEXT,
-      local TEXT,
-      telefone TEXT,
-      imagem TEXT,
+      data_evento TEXT NOT NULL,
+      endereco TEXT NOT NULL,
+      valor_entrada TEXT,
+      link_ingresso TEXT,
       usuario_id INTEGER,
+      destaque INTEGER DEFAULT 0,
       aprovado INTEGER DEFAULT 0,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
+  /*
+     TABELA PROMOCOES
+  */
+  db.run(`
+    CREATE TABLE IF NOT EXISTS promocoes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+      titulo TEXT NOT NULL,
+
+      descricao TEXT NOT NULL,
+
+      estabelecimento_id INTEGER NOT NULL,
+
+      usuario_id INTEGER NOT NULL,
+
+      aprovado INTEGER DEFAULT 0,
+
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  /*
+     TABELA FAVORITOS
+  */
+  db.run(`
+    CREATE TABLE IF NOT EXISTS favoritos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+      usuario_id INTEGER NOT NULL,
+
+      estabelecimento_id INTEGER NOT NULL,
+
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
   /*
      SOLICITAÇÕES PARA VIRAR EMPREENDEDOR
@@ -89,6 +125,23 @@ db.serialize(() => {
     )
   `);
 
+  /*
+     NOVA TABELA
+     SOLICITAÇÃO DE ASSOCIAÇÃO DE ESTABELECIMENTO
+  */
+  db.run(`
+    CREATE TABLE IF NOT EXISTS solicitacoes_estabelecimento (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+      usuario_id INTEGER NOT NULL,
+
+      estabelecimento_id INTEGER NOT NULL,
+
+      status TEXT DEFAULT 'pendente',
+
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 });
 
 module.exports = db;

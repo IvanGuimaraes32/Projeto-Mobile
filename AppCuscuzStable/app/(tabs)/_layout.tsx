@@ -12,9 +12,27 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
+
         tabBarButton: HapticTab,
+
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+
+        /*
+           AJUSTE GLOBAL DA TAB BAR
+        */
+        tabBarStyle: {
+          height: 70,
+          paddingBottom: 8,
+          paddingTop: 6,
+        },
+
+        /*
+           ÁREA SEGURA PARA TODAS AS TELAS
+        */
+        sceneStyle: {
+          paddingBottom: 20,
+        },
       }}
     >
       <Tabs.Screen
@@ -28,9 +46,9 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="explore"
+        name="eventos"
         options={{
-          title: "Explore",
+          title: "Eventos",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="paperplane.fill" color={color} />
           ),
@@ -43,6 +61,16 @@ export default function TabLayout() {
           title: "Estabelecimentos",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="location.fill" color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="configuracoes"
+        options={{
+          title: "Config",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="gearshape.fill" color={color} />
           ),
         }}
       />

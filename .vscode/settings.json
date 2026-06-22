@@ -3,5 +3,14 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 150,
+      "driver": "SQLite",
+      "database": "${workspaceFolder:Projeto-Mobile}/backend/guia_aero_rancho.db",
+      "name": "cuscuz App"
+    }
+  ]
 }

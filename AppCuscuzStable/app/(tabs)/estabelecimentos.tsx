@@ -1,5 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -9,64 +10,104 @@ import {
 } from "react-native";
 
 export default function Estabelecimentos() {
-  const [estabelecimentos, setEstabelecimentos] = useState<any[]>([]);
+  const categorias = [
+    {
+      nome: "Mercado",
+      icon: "cart",
+      cor: "#2e8b57",
+    },
 
-  useEffect(() => {
-    carregarEstabelecimentos();
-  }, []);
+    {
+      nome: "Padaria",
+      icon: "cafe",
+      cor: "#d2691e",
+    },
 
-  async function carregarEstabelecimentos() {
-    try {
-      const response = await fetch(
-        "http://192.168.1.111:3333/estabelecimentos"
-      );
+    {
+      nome: "Restaurante",
+      icon: "restaurant",
+      cor: "#ff7a00",
+    },
 
-      const data = await response.json();
+    {
+      nome: "Lanchonete",
+      icon: "fast-food",
+      cor: "#ff6347",
+    },
 
-      setEstabelecimentos(data);
-    } catch (error) {
-      console.log("ERRO API:", error);
-    }
+    {
+      nome: "Farmácia",
+      icon: "medical",
+      cor: "#4169e1",
+    },
+
+    {
+      nome: "Academia",
+      icon: "barbell",
+      cor: "#228b22",
+    },
+
+    {
+      nome: "Salão",
+      icon: "cut",
+      cor: "#c71585",
+    },
+
+    {
+      nome: "Salão de Beleza",
+      icon: "sparkles",
+      cor: "#da70d6",
+    },
+
+    {
+      nome: "Pet Shop",
+      icon: "paw",
+      cor: "#8b4513",
+    },
+
+    {
+      nome: "Loja",
+      icon: "bag",
+      cor: "#9370db",
+    },
+
+    {
+      nome: "Serviços Gerais",
+      icon: "construct",
+      cor: "#708090",
+    },
+  ];
+
+  function abrirCategoria(nome: string) {
+    router.push({
+      pathname: "/categoria",
+      params: { categoria: nome },
+    });
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.header}>
-        <Text style={styles.logo}>Estabelecimentos</Text>
+        <Text style={styles.logo}>Explorar</Text>
 
-        <Text style={styles.subtitle}>
-          Comércios locais do Aero Rancho
-        </Text>
+        <Text style={styles.subtitle}>Escolha uma categoria</Text>
       </View>
 
-      <Text style={styles.sectionTitle}>
-        Locais Cadastrados
-      </Text>
-
-      {estabelecimentos.map((item, index) => (
+      {categorias.map((item, index) => (
         <TouchableOpacity
           key={index}
-          style={styles.card}
-          onPress={() =>
-            router.push({
-              pathname: "/estabelecimento",
-              params: { id: item.id },
-            })
-          }
+          style={[styles.card, { backgroundColor: item.cor }]}
+          onPress={() => abrirCategoria(item.nome)}
         >
-          <View>
-            <Text style={styles.cardTitle}>
-              {item.nome}
-            </Text>
+          <View style={styles.row}>
+            <Ionicons name={item.icon as any} size={28} color="white" />
 
-            <Text style={styles.cardCategory}>
-              {item.categoria}
-            </Text>
+            <Text style={styles.cardText}>{item.nome}</Text>
           </View>
-
-          <Text style={styles.distance}>
-            Ver detalhes
-          </Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -79,6 +120,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#023f14",
     padding: 20,
     paddingTop: 60,
+  },
+
+  scrollContent: {
+    paddingBottom: 120,
   },
 
   header: {
@@ -96,36 +141,21 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  sectionTitle: {
-    color: "#fbffda",
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 15,
+  card: {
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 14,
   },
 
-  card: {
-    backgroundColor: "#86d18b",
-    borderRadius: 15,
-    padding: 18,
-    marginBottom: 12,
+  row: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
   },
 
-  cardTitle: {
+  cardText: {
+    color: "white",
     fontSize: 18,
     fontWeight: "bold",
-    color: "#023f14",
-  },
-
-  cardCategory: {
-    color: "#023f14",
-    marginTop: 4,
-  },
-
-  distance: {
-    color: "#023f14",
-    fontWeight: "bold",
+    marginLeft: 15,
   },
 });
