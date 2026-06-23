@@ -3,11 +3,14 @@ const router = express.Router();
 const db = require("../database");
 
 /*
-   ACOMPANHAR ESTABELECIMENTO
+   FOLLOW / UNFOLLOW AUTOMÁTICO
 */
 router.post("/", (req, res) => {
   const { usuario_id, estabelecimento_id } = req.body;
 
+  /*
+     VERIFICA SE JÁ SEGUE
+  */
   const verificarSql = `
     SELECT *
     FROM favoritos
@@ -22,20 +25,43 @@ router.post("/", (req, res) => {
       });
     }
 
+    /*
+       SE JÁ EXISTE → PARA DE SEGUIR
+    */
     if (row) {
-      return res.status(400).json({
-        error: "Você já acompanha este estabelecimento",
+      const deleteSql = `
+        DELETE FROM favoritos
+        WHERE usuario_id = ?
+        AND estabelecimento_id = ?
+      `;
+
+      db.run(deleteSql, [usuario_id, estabelecimento_id], function (err) {
+        if (err) {
+          return res.status(500).json({
+            error: err.message,
+          });
+        }
+
+        return res.json({
+          message: "Você deixou de seguir este estabelecimento",
+          seguindo: false,
+        });
       });
+
+      return;
     }
 
+    /*
+       SE NÃO EXISTE → COMEÇA A SEGUIR
+    */
     const insertSql = `
-        INSERT INTO favoritos
-        (
-          usuario_id,
-          estabelecimento_id
-        )
-        VALUES (?, ?)
-      `;
+      INSERT INTO favoritos
+      (
+        usuario_id,
+        estabelecimento_id
+      )
+      VALUES (?, ?)
+    `;
 
     db.run(insertSql, [usuario_id, estabelecimento_id], function (err) {
       if (err) {
@@ -44,8 +70,9 @@ router.post("/", (req, res) => {
         });
       }
 
-      res.json({
-        message: "Acompanhamento realizado com sucesso",
+      return res.json({
+        message: "Agora você segue este estabelecimento",
+        seguindo: true,
       });
     });
   });
@@ -78,7 +105,7 @@ router.get("/verificar/:usuario_id/:estabelecimento_id", (req, res) => {
 });
 
 /*
-   LISTAR ESTABELECIMENTOS QUE USUÁRIO ACOMPANHA
+   LISTAR ESTABELECIMENTOS QUE USUÁRIO SEGUE
 */
 router.get("/:usuario_id", (req, res) => {
   const { usuario_id } = req.params;
@@ -106,32 +133,7 @@ router.get("/:usuario_id", (req, res) => {
       });
     }
 
-    res.json(rows);
-  });
-});
-
-/*
-   PARAR DE ACOMPANHAR
-*/
-router.delete("/", (req, res) => {
-  const { usuario_id, estabelecimento_id } = req.body;
-
-  const sql = `
-    DELETE FROM favoritos
-    WHERE usuario_id = ?
-    AND estabelecimento_id = ?
-  `;
-
-  db.run(sql, [usuario_id, estabelecimento_id], function (err) {
-    if (err) {
-      return res.status(500).json({
-        error: err.message,
-      });
-    }
-
-    res.json({
-      message: "Acompanhamento removido com sucesso",
-    });
+    return res.json(rows);
   });
 });
 

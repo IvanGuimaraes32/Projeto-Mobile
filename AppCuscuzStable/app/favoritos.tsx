@@ -43,10 +43,13 @@ export default function Favoritos() {
     }
   }
 
+  /*
+     AGORA USA POST (TOGGLE)
+  */
   async function pararDeSeguir(estabelecimentoId: number) {
     try {
       const response = await fetch("http://192.168.1.111:3333/favoritos", {
-        method: "DELETE",
+        method: "POST",
 
         headers: {
           "Content-Type": "application/json",
@@ -61,8 +64,11 @@ export default function Favoritos() {
       const data = await response.json();
 
       if (response.ok) {
-        Alert.alert("Sucesso", "Você deixou de seguir este comércio");
+        Alert.alert("Sucesso", data.message);
 
+        /*
+           RECARREGA LISTA
+        */
         carregarFavoritos(usuario.id);
       } else {
         Alert.alert("Erro", data.error);
@@ -114,9 +120,6 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
 
-  /*
-     ESPAÇO PARA NÃO FICAR ATRÁS DA TAB BAR
-  */
   scrollContent: {
     paddingBottom: 120,
   },

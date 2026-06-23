@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Device from "expo-device";
-import * as Notifications from "expo-notifications";
+//import * as Device from "expo-device";
+//import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -86,8 +86,8 @@ export default function Login() {
           "usuarioLogado",
           JSON.stringify(data.usuario),
         );
-
-        await registrarPush(data.usuario.id);
+        //desativei o push porque estava com erro no Expo Go
+        //await registrarPush(data.usuario.id);
 
         Alert.alert("Sucesso", `Bem-vindo ${data.usuario.nome}`);
 

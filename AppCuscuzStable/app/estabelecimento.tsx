@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Linking,
@@ -66,10 +67,6 @@ export default function Estabelecimento() {
   }
 
   async function acompanhar() {
-    if (seguindo) {
-      return;
-    }
-
     try {
       const response = await fetch("http://192.168.1.111:3333/favoritos", {
         method: "POST",
@@ -84,10 +81,14 @@ export default function Estabelecimento() {
         }),
       });
 
-      if (response.ok) {
-        setSeguindo(true);
+      const data = await response.json();
 
-        Alert.alert("Sucesso", "Você receberá novidades deste comércio");
+      if (response.ok) {
+        setSeguindo(data.seguindo);
+
+        Alert.alert("Sucesso", data.message);
+      } else {
+        Alert.alert("Erro", data.error);
       }
     } catch (error) {
       console.log(error);
@@ -109,7 +110,8 @@ export default function Estabelecimento() {
   if (!estabelecimento) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Carregando...</Text>
+        <ActivityIndicator size="large" color="#f9ffa1" />
+        <Text style={styles.loadingText}>Carregando estabelecimento...</Text>
       </View>
     );
   }
@@ -118,6 +120,7 @@ export default function Estabelecimento() {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
     >
       {estabelecimento.imagem ? (
         <Image source={{ uri: estabelecimento.imagem }} style={styles.image} />
@@ -129,22 +132,21 @@ export default function Estabelecimento() {
 
       <View style={styles.banner}>
         <Text style={styles.bannerTitle}>{estabelecimento.nome}</Text>
-
-        <Text style={styles.bannerSub}>{estabelecimento.categoria}</Text>
+        <Text style={styles.categoryBadge}>{estabelecimento.categoria}</Text>
       </View>
 
-      <View style={styles.info}>
-        <Text style={styles.title}>Sobre o estabelecimento</Text>
+      <View style={styles.infoCard}>
+        <Text style={styles.infoTitle}>📝 Sobre</Text>
 
-        <Text style={styles.description}>
+        <Text style={styles.infoText}>
           {estabelecimento.descricao || "Sem descrição cadastrada"}
         </Text>
       </View>
 
-      <View style={styles.info}>
-        <Text style={styles.title}>Endereço</Text>
+      <View style={styles.infoCard}>
+        <Text style={styles.infoTitle}>📍 Endereço</Text>
 
-        <Text style={styles.description}>{estabelecimento.endereco}</Text>
+        <Text style={styles.infoText}>{estabelecimento.endereco}</Text>
       </View>
 
       <TouchableOpacity
@@ -174,7 +176,7 @@ export default function Estabelecimento() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#004d1a",
+    backgroundColor: "#023f14",
   },
 
   scrollContent: {
@@ -185,21 +187,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#004d1a",
+    backgroundColor: "#023f14",
   },
 
   loadingText: {
     color: "white",
-    fontSize: 20,
+    marginTop: 15,
+    fontSize: 16,
   },
 
   image: {
     width: "100%",
-    height: 220,
+    height: 230,
   },
 
   placeholder: {
-    height: 220,
+    height: 230,
     backgroundColor: "#444",
     justifyContent: "center",
     alignItems: "center",
@@ -211,7 +214,7 @@ const styles = StyleSheet.create({
 
   banner: {
     backgroundColor: "#ff7a00",
-    padding: 30,
+    padding: 25,
   },
 
   bannerTitle: {
@@ -220,24 +223,35 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  bannerSub: {
-    color: "#fff",
-    marginTop: 5,
-  },
-
-  info: {
-    padding: 20,
-  },
-
-  title: {
-    color: "#fff",
-    fontSize: 22,
+  categoryBadge: {
+    backgroundColor: "#ffffff30",
+    color: "white",
+    marginTop: 12,
+    alignSelf: "flex-start",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
     fontWeight: "bold",
   },
 
-  description: {
-    color: "#ddd",
+  infoCard: {
+    backgroundColor: "#145c2a",
+    marginHorizontal: 20,
+    marginTop: 18,
+    padding: 18,
+    borderRadius: 14,
+  },
+
+  infoTitle: {
+    color: "#f9ffa1",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  infoText: {
+    color: "white",
     marginTop: 10,
+    lineHeight: 22,
   },
 
   followButton: {
@@ -282,6 +296,7 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: 15,
   },
 
   iconButtonText: {

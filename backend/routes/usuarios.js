@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const rateLimit = require("express-rate-limit");
 
 /*
-   PROTEÇÃO CONTRA BRUTE FORCE LOGIN
+    Limitador de tentativas de login para prevenir ataques de força bruta
 */
 const loginLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -18,7 +18,7 @@ const loginLimiter = rateLimit({
 });
 
 /*
-   CADASTRAR USUÁRIO
+   cadastro de usuário
 */
 router.post("/register", async (req, res) => {
   const { nome, email, senha } = req.body;
